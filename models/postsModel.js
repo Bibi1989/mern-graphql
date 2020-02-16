@@ -15,7 +15,7 @@ const postSchema = new Schema({
       username: String,
       createdAt: {
           type: Date,
-          default: Date.now
+          default: Date.now()
       }
     }
   ],
@@ -24,13 +24,13 @@ const postSchema = new Schema({
       username: String,
       createdAt: {
           type: Date,
-          default: Date.now
+          default: Date.now()
       }
     }
   ],
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   }
 });
 

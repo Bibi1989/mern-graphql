@@ -2,8 +2,8 @@ const Post = require('../../models/postsModel')
 
 module.exports = {
   Query: {
-    getPosts() {
-      return Post;
+    async getPosts() {
+      return await Post.find({});
     }
   }
 };

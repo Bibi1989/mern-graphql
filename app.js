@@ -18,7 +18,7 @@ const server = new ApolloServer({
 
 server
   .listen({ port: 7001 })
-  .then(res => console.log(`graphql running at port ${res.url}`));
+  .then(res => console.log(`graphql running at port ${res.port}`));
 
 mongoose
   .connect(process.env.DB_URL, {
