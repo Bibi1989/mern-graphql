@@ -9,6 +9,10 @@ const postSchema = new Schema({
     type: String,
     required: true
   },
+  email: {
+    type: String,
+    required: true
+  },
   comments: [
     {
       body: String,
@@ -34,4 +38,4 @@ const postSchema = new Schema({
   }
 });
 
-module.exports = model("User", postSchema);
+module.exports = model("post", postSchema);

@@ -5,6 +5,7 @@ module.exports = gql`
     id: String!
     body: String!
     username: String!
+    email: String!
     createdAt: String
   }
 
@@ -14,7 +15,7 @@ module.exports = gql`
     email: String!
     username: String!
     token: String!
-    createdAt: String
+    createdAt: String!
   }
 
   # Login to return
@@ -42,11 +43,14 @@ module.exports = gql`
   # query methods
   type Query {
     getPosts: [Post]
+    getAPost(postId: ID!): Post!
   }
 
   # mutation methods
   type Mutation {
     register(registerInput: RegisterInput): User!
-    login(loginInput: LogInput): User
+    login(loginInput: LogInput): User!
+    createPost(body: String): Post!
+    deletePost(deleteId: ID): String!
   }
 `;

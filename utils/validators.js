@@ -21,17 +21,17 @@ module.exports.validateRegister = (username, email, password, confirmPassword) =
   };
 };
 
-module.exports.validateLogin = (username, email, password, confirmPassword) => {
+module.exports.validateLogin = ( email, password) => {
   const errors = {};
-//   if (email.trim() === "") {
-//     errors.email = "Email is empty";
-//   } else {
-//     const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-//     if (!email.match(regex)) {
-//       errors.email = "Email is not valid";
-//     }
-//   }
-  if (password === "") {
+  if (email.trim() === "") {
+    errors.email = "Email is empty";
+  } else {
+    const regex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!email.match(regex)) {
+      errors.email = "Email is not valid";
+    }
+  }
+  if (password.trim() === "") {
     errors.password = "Password is empty";
   }
 

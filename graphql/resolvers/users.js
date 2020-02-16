@@ -6,6 +6,7 @@ const { validateRegister, validateLogin } = require("../../utils/validators");
 
 module.exports = {
   Mutation: {
+    //   register mutation logic
     async register(
       _parent,
       { registerInput: { username, email, password, confirmPassword } },
@@ -23,9 +24,16 @@ module.exports = {
         throw new UserInputError("Errors", errors);
       }
 
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ username });
+      const userEmail = await User.findOne({ email });
 
       if (user)
+        throw new UserInputError("Users exist", {
+          error: {
+            email: "This user has register"
+          }
+        });
+      if (userEmail)
         throw new UserInputError("Users exist", {
           error: {
             email: "This email has register"
@@ -61,12 +69,8 @@ module.exports = {
       };
     },
 
-    async login(
-      _parent,
-      { loginInput: { email, password } },
-      _context,
-      _info
-    ) {
+    // login mutation logic
+    async login(_parent, { loginInput: { email, password } }, _context, _info) {
       const { errors, valid } = validateLogin(email, password);
 
       if (!valid) {
