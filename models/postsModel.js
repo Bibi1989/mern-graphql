@@ -23,7 +23,7 @@ const postSchema = new Schema({
       }
     }
   ],
-  comments: [
+  likes: [
     {
       username: String,
       createdAt: {
@@ -32,6 +32,10 @@ const postSchema = new Schema({
       }
     }
   ],
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'users'
+  },
   createdAt: {
     type: Date,
     default: Date.now()
