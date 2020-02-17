@@ -2,11 +2,14 @@ var createError = require("http-errors");
 var express = require("express");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-const { ApolloServer } = require("apollo-server");
+const { ApolloServer, PubSub } = require("apollo-server");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 dotenv.config();
+
+// for subscription
+const pubsub = new PubSub();
 
 const typeDefs = require("./graphql/typeDefs");
 const resolvers = require("./graphql/resolvers");
@@ -14,7 +17,7 @@ const resolvers = require("./graphql/resolvers");
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({req, res, next}) => ({req, res, next})
+  context: ({ req }) => ({ req, pubsub })
 });
 
 server

@@ -27,16 +27,19 @@ module.exports = {
   },
 
   Mutation: {
-    async createPost(_, { body }, { req }) {
+    async createPost(_, { body }, { req, pubsub }) {
       const user = Auth(req);
       try {
-        const newPost = await new Post({
+        const posts = await new Post({
           body,
           user: user.id,
           username: user.username,
           email: user.email
         });
-        const post = newPost.save();
+        const post = posts.save();
+        pubsub.publish('NEW_POST', {
+            newPost: post
+        })
         return post;
       } catch (error) {
         throw new Error("Server error");
@@ -60,21 +63,27 @@ module.exports = {
     },
 
     async likePost(_, { postId }, { req }) {
-      const { username } = auth(req);
+      const { username } = Auth(req);
 
-      const posts = await post.findById(postId);
+      const posts = await Post.findById(postId);
       if (posts) {
-        const findPost = posts.find(post => post.username === username);
+        const findPost = posts.likes.find(like => like.username === username);
         if (findPost) {
-          throw new UserInpuError("You already like this post");
+          posts.likes = posts.likes.filter(like => like.username !== username);
         } else {
-          await post.likes.unshift({
+          await posts.likes.unshift({
             username
           });
         }
+        await posts.save();
+        return posts;
       } else {
-        throw new UserInputError("Post not found");
+        throw new UserInputError("Post is not found");
       }
     }
+  },
+
+  Subscription: {
+      newPost: (_, __, {req, pubsub}) => pubsub.asyncIterator('NEW_POST')
   }
 };

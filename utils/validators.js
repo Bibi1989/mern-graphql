@@ -14,6 +14,9 @@ module.exports.validateRegister = (username, email, password, confirmPassword) =
   if (password.trim() === "") {
     errors.password = "Password is empty";
   }
+  if (password.trim() !== confirmPassword.trim()) {
+    errors.confirmPassword = "Password do not match!!!";
+  }
 
   return {
     errors,
