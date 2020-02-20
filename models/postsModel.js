@@ -17,28 +17,22 @@ const postSchema = new Schema({
     {
       body: String,
       username: String,
-      createdAt: {
-          type: Date,
-          default: Date.now()
-      }
+      createdAt: String
     }
   ],
   likes: [
     {
       username: String,
-      createdAt: {
-          type: Date,
-          default: Date.now()
-      }
+      createdAt: String
     }
   ],
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'users'
+    ref: "users"
   },
   createdAt: {
-    type: Date,
-    default: Date.now()
+    type: String,
+    default: new Date().toISOString()
   }
 });
 

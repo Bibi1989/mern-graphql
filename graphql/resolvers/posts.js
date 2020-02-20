@@ -6,7 +6,7 @@ module.exports = {
   Query: {
     async getPosts() {
       try {
-        const posts = await Post.find().sort({ createdAt: -1 });
+        const posts = await Post.find().sort({ createdAt: 1 });
         return posts;
       } catch (error) {
         throw new Error(error);
@@ -28,26 +28,23 @@ module.exports = {
 
   Mutation: {
     async createPost(_, { body }, { req, pubsub }) {
-      const user = Auth(req);
-      try {
-        const posts = await new Post({
-          body,
-          user: user.id,
-          username: user.username,
-          email: user.email
-        });
-        const post = posts.save();
-        pubsub.publish('NEW_POST', {
-            newPost: post
-        })
-        return post;
-      } catch (error) {
-        throw new Error("Server error");
-      }
+      const user = await Auth(req);
+      const posts = new Post({
+        body,
+        user: user.id,
+        username: user.username,
+        email: user.email,
+        createdAt: new Date().toISOString()
+      });
+      const post = await posts.save();
+      // pubsub.publish('NEW_POST', {
+      //     newPost: post
+      // })
+      return post;
     },
 
     async deletePost(_, { postId }, { req }) {
-      const user = Auth(req);
+      const user = await Auth(req);
       try {
         const post = await Post.findById(postId);
         if (post === null) return "Comment Not Found";
@@ -63,16 +60,17 @@ module.exports = {
     },
 
     async likePost(_, { postId }, { req }) {
-      const { username } = Auth(req);
+      const user = await Auth(req);
 
       const posts = await Post.findById(postId);
+      console.log("postlike", posts, user.username);
       if (posts) {
-        const findPost = posts.likes.find(like => like.username === username);
-        if (findPost) {
-          posts.likes = posts.likes.filter(like => like.username !== username);
+        if (posts.likes.find(like => like.username === user.username)) {
+          posts.likes = posts.likes.filter(like => like.username !== user.username);
         } else {
-          await posts.likes.unshift({
-            username
+          posts.likes.push({
+            username: user.username,
+            createdAt: new Date().toISOString()
           });
         }
         await posts.save();
@@ -81,9 +79,9 @@ module.exports = {
         throw new UserInputError("Post is not found");
       }
     }
-  },
-
-  Subscription: {
-      newPost: (_, __, {req, pubsub}) => pubsub.asyncIterator('NEW_POST')
   }
+
+  //   Subscription: {
+  //       newPost: (_, __, {req, pubsub}) => pubsub.asyncIterator('NEW_POST')
+  //   }
 };

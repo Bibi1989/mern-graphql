@@ -14,23 +14,27 @@ const register = async registerInput => {
   );
 
   if (!valid) {
-    throw new UserInputError("Errors", errors);
+    throw new UserInputError("Empty fields", {
+      error: errors
+    });
   }
 
   const user = await User.findOne({ username });
   const userEmail = await User.findOne({ email });
 
+  const error = {
+    email: "This user has register",
+    username: "This user has register",
+    password: "This user has register"
+  };
+
   if (user)
     throw new UserInputError("Users exist", {
-      error: {
-        email: "This user has register"
-      }
+      error: error
     });
   if (userEmail)
     throw new UserInputError("Users exist", {
-      error: {
-        email: "This email has register"
-      }
+      error: error
     });
 
   password = await bcrypt.hash(password, 12);
@@ -38,12 +42,13 @@ const register = async registerInput => {
   const newUser = new User({
     email,
     username,
-    password
+    password,
+    createdAt: new Date().toISOString()
   });
 
   const response = await newUser.save();
 
-  const { SECRET_KEY } = process.env;
+  // const { SECRET_KEY } = process.env;
 
   const token = jwt.sign(
     {
@@ -51,10 +56,7 @@ const register = async registerInput => {
       email: response.email,
       username: response.username
     },
-    SECRET_KEY,
-    {
-      expiresIn: "1h"
-    }
+    process.env.SECRET_KEY
   );
 
   return {
@@ -69,24 +71,30 @@ const login = async loginInput => {
   const { errors, valid } = validateLogin(email, password);
 
   if (!valid) {
-    throw new UserInputError("Errors", errors);
+    throw new UserInputError("Empty fields", {
+      error: errors
+    });
   }
 
   const user = await User.findOne({ email });
+  const error = {
+    email: "You have not register",
+    password: "You have not register"
+  };
   if (!user)
     throw new UserInputError("You have not register", {
-      error: {
-        email: "This email has not register"
-      }
+      error: error
     });
 
   validPassword = await bcrypt.compare(password, user.password);
 
+  const passwordError = {
+    password: "Invalid password"
+  };
+
   if (!validPassword) {
-    throw new UserInputError("Incorrect password", {
-      error: {
-        password: "Incorrect password"
-      }
+    throw new UserInputError("Empty fields", {
+      error: passwordError
     });
   }
 
@@ -96,10 +104,7 @@ const login = async loginInput => {
       email: user.email,
       username: user.username
     },
-    process.env.SECRET_KEY,
-    {
-      expiresIn: "1h"
-    }
+    process.env.SECRET_KEY
   );
 
   return {

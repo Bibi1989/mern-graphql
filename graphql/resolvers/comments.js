@@ -1,5 +1,5 @@
 const Post = require("../../models/postsModel");
-const auth = require("../../utils/auth");
+const { Auth } = require("../../utils/auth");
 const { UserInputError, AuthenticationError } = require("apollo-server");
 
 module.exports = {
@@ -19,7 +19,8 @@ module.exports = {
       if (post) {
         post.comments.unshift({
           body,
-          username
+          username,
+          createdAt: new Date().toISOString()
         });
 
         await post.save();
